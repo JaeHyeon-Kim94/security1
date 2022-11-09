@@ -72,6 +72,8 @@ public enum CustomOAuth2Provider {
         ClientRegistration.Builder builder = ClientRegistration.withRegistrationId(registrationId);
 
         return builder.clientAuthenticationMethod(method)
+                //oauth2에서 권한을 부여받는 방식은 여러가지가 있는데,
+                // credential은 javascript이고, 여기서 사용하는 방식은 authorization_code
                 .authorizationGrantType(AuthorizationGrantType.AUTHORIZATION_CODE)
                 .redirectUri(redirectUrl);
     }

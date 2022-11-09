@@ -107,6 +107,9 @@ public class SecurityConfig {
     }
 
     private ClientRegistration getRegistration(OAuth2ClientProperties clientProperties, String client){
+
+        //spring security oauth2의 기본 제공자가 아닌 naver, kakao, spotify와 달리
+        //기본 제공자인 google의 경우 redirect-uri, token_uri, authorization_uri 등은 기본 제공된다.
         if("google".equals(client)){
             OAuth2ClientProperties.Registration registration = clientProperties.getRegistration().get("google");
             return CommonOAuth2Provider.GOOGLE.getBuilder(client)
