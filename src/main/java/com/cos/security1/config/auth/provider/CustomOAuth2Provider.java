@@ -57,7 +57,8 @@ public enum CustomOAuth2Provider {
                     .authorizationUri("https://accounts.spotify.com/authorize")
                     .tokenUri("https://accounts.spotify.com/api/token")
                     .userInfoUri("https://api.spotify.com/v1/me")
-                    .clientName("spotify");
+                    .clientName("spotify")
+                    .userNameAttributeName("id");
             return builder;
         }
     };

@@ -1,12 +1,15 @@
 package com.cos.security1.config.oauth;
 
 import com.cos.security1.config.auth.PrincipalDetails;
+import com.cos.security1.config.auth.provider.OAuth2UserAttributes;
 import com.cos.security1.model.User;
 import com.cos.security1.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.oauth2.client.userinfo.DefaultOAuth2UserService;
 import org.springframework.security.oauth2.client.userinfo.OAuth2UserRequest;
+import org.springframework.security.oauth2.core.OAuth2AccessToken;
 import org.springframework.security.oauth2.core.OAuth2AuthenticationException;
 import org.springframework.security.oauth2.core.user.OAuth2User;
 import org.springframework.stereotype.Service;
@@ -18,6 +21,9 @@ import java.security.SecureRandom;
 @RequiredArgsConstructor
 public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
+    @Autowired
+    private BCryptPasswordEncoder encoder;
+
     private final UserRepository repository;
 
     //resource server로부터 받은 userRequest 데이터에 대한 후처리 되는 함수
@@ -28,43 +34,29 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
-
-
+        String provider = userRequest.getClientRegistration().getRegistrationId();
         System.out.println("getClientRegistration : " + userRequest.getClientRegistration());
         System.out.println("getAdditionalParametners : " + userRequest.getAdditionalParameters());
-        System.out.println("getAccessToken : " + userRequest.getAccessToken());
+        System.out.println("getAccessToken.getScopes : " + userRequest.getAccessToken().getScopes());
+        System.out.println("getAccessToken.getTokenType : " + userRequest.getAccessToken().getTokenType().getValue());
+        System.out.println("getAccesToken.getTokenValues : " + userRequest.getAccessToken().getTokenValue());
+        System.out.println("getUserAttributes : " + oAuth2User.getAttributes());
+        OAuth2AccessToken token = userRequest.getAccessToken();
+        OAuth2UserAttributes attributes = OAuth2UserAttributes.of(provider, token, oAuth2User.getAttributes());
 
 
-
-
-        String provider = userRequest.getClientRegistration().getRegistrationId();
-        String providerId = oAuth2User.getAttribute("sub");
-        String email = oAuth2User.getAttribute("email");
-        String username = provider+"_"+providerId;
-
-        SecureRandom random = null;
-        try {
-            random = SecureRandom.getInstanceStrong();
-        } catch (NoSuchAlgorithmException e) {
-            throw new RuntimeException(e);
-        }
-
-        StringBuilder sb = new StringBuilder();
-        for(int i=0; i<1 ; i++, sb.append(random.nextInt()));
-        String password = sb.toString();
-        System.out.println("password : " + password);
         String role = "ROLE_USER";
 
-        User userEntity = repository.findByUsername(username);
+        User userEntity = repository.findByUsername(attributes.getUserName());
 
         if(userEntity == null){
             userEntity = User.builder()
-                    .username(username)
-                    .password(password)
-                    .email(email)
+                    .username(attributes.getUserName())
+                    .password(attributes.getPassword())
+                    .email(attributes.getEmail())
                     .role(role)
                     .provider(provider)
-                    .providerId(providerId)
+                    .providerId(attributes.getUserId())
                     .build();
             repository.save(userEntity);
         }
