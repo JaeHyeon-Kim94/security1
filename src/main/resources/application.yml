@@ -9,6 +9,7 @@ server:
       force: true
 
 spring:
+
   datasource:
     driver-class-name: com.mysql.cj.jdbc.Driver
     url: jdbc:mysql://localhost:3306/security?serverTimezone=Asia/Seoul
@@ -25,9 +26,15 @@ spring:
   devtools:
     restart:
       enabled: false
+    livereload:
+      enabled: true
 
   mustache:
     servlet:
       cache: false
+
   profiles:
-    include: oauth2
+    include:
+      - oauth2
+      - actuator
+      - logback

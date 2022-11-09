@@ -1,6 +1,9 @@
 package com.cos.security1.config;
 
+import org.springframework.boot.actuate.trace.http.HttpTraceRepository;
+import org.springframework.boot.actuate.trace.http.InMemoryHttpTraceRepository;
 import org.springframework.boot.web.servlet.view.MustacheViewResolver;
+import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ViewResolverRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -16,5 +19,10 @@ public class WebMvcConfig implements WebMvcConfigurer {
         resolver.setSuffix(".html");
 
         registry.viewResolver(resolver);
+    }
+
+    @Bean
+    public InMemoryHttpTraceRepository InMemoryHttpTraceRepository(){
+        return new InMemoryHttpTraceRepository();
     }
 }

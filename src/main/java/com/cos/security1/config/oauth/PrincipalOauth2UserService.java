@@ -29,6 +29,14 @@ public class PrincipalOauth2UserService extends DefaultOAuth2UserService {
 
         OAuth2User oAuth2User = super.loadUser(userRequest);
 
+
+        System.out.println("getClientRegistration : " + userRequest.getClientRegistration());
+        System.out.println("getAdditionalParametners : " + userRequest.getAdditionalParameters());
+        System.out.println("getAccessToken : " + userRequest.getAccessToken());
+
+
+
+
         String provider = userRequest.getClientRegistration().getRegistrationId();
         String providerId = oAuth2User.getAttribute("sub");
         String email = oAuth2User.getAttribute("email");
